@@ -2,7 +2,7 @@
   <parent>
     <groupId>edu.unc.mapseq</groupId>
     <artifactId>mapseq</artifactId>
-    <version>0.1.32-SNAPSHOT</version>
+    <version>0.1.32</version>
   </parent>
   <name>MaPSeq :: Modules</name>
   <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
   <version>0.6.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <mapseq.version>0.6.43-SNAPSHOT</mapseq.version>
+    <mapseq.version>0.6.43</mapseq.version>
   </properties>
   <issueManagement>
     <system>GitHub Issues</system>
