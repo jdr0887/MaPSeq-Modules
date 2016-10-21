@@ -2,7 +2,7 @@
   <parent>
     <groupId>edu.unc.mapseq</groupId>
     <artifactId>mapseq</artifactId>
-    <version>0.1.32</version>
+    <version>0.1.33</version>
   </parent>
   <name>MaPSeq :: Modules</name>
   <modelVersion>4.0.0</modelVersion>
@@ -119,17 +119,6 @@
       </dependency> 
     </dependencies>
   </dependencyManagement>
-  <build>
-    <pluginManagement>
-      <plugins>
-	<plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-plugin-plugin</artifactId>
-          <version>3.4</version>
-	</plugin>
-      </plugins>
-    </pluginManagement>    
-  </build>
   <modules>
     <module>mapseq-module-cli-generator</module>
     <module>mapseq-module-cli-generator-maven-plugin</module>    
