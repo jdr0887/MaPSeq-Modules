@@ -11,7 +11,7 @@
   <version>0.6.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <mapseq.version>0.6.44</mapseq.version>
+    <mapseq.version>0.6.45</mapseq.version>
   </properties>
   <issueManagement>
     <system>GitHub Issues</system>
