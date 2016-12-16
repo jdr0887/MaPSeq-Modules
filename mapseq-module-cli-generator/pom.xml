@@ -2,13 +2,13 @@
   <parent>
     <groupId>edu.unc.mapseq</groupId>
     <artifactId>modules</artifactId>
-    <version>0.6.8-SNAPSHOT</version>
+    <version>0.6.8</version>
   </parent>
   <name>MaPSeq :: Modules :: Module CLI Generator</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.unc.mapseq.modules</groupId>
   <artifactId>mapseq-module-cli-generator</artifactId>
-  <version>0.6.8-SNAPSHOT</version>
+  <version>0.6.8</version>
   <packaging>jar</packaging>
   <dependencies>
     <dependency>
