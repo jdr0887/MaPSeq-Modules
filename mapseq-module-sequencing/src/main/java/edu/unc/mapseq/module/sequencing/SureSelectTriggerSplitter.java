@@ -30,9 +30,9 @@ public class SureSelectTriggerSplitter extends Module {
     @InputArgument(description = "workdir")
     private File workDirectory;
 
-    @NotNull(message = "intervalList is required", groups = InputValidations.class)
-    @InputArgument(description = "SureSelect panel interval file in NC_000001.10:762022-762345, for example, format")
-    private File intervalList;
+    @NotNull(message = "bed is required", groups = InputValidations.class)
+    @InputArgument
+    private File bed;
 
     @NotNull(message = "subjectName is required", groups = InputValidations.class)
     @InputArgument(description = "Sample ID")
@@ -71,14 +71,16 @@ public class SureSelectTriggerSplitter extends Module {
 
         DefaultModuleOutput moduleOutput = new DefaultModuleOutput();
         moduleOutput.setExitCode(0);
-        
+
         String[] par1CoordinateSplit = par1Coordinate.split("-");
-        Range<Integer> p1Range = Range.between(Integer.valueOf(par1CoordinateSplit[0]), Integer.valueOf(par1CoordinateSplit[1]));
+        Range<Integer> p1Range = Range.between(Integer.valueOf(par1CoordinateSplit[0]),
+                Integer.valueOf(par1CoordinateSplit[1]));
 
         String[] par2CoordinateSplit = par2Coordinate.split("-");
-        Range<Integer> p2Range = Range.between(Integer.valueOf(par2CoordinateSplit[0]), Integer.valueOf(par2CoordinateSplit[1]));
+        Range<Integer> p2Range = Range.between(Integer.valueOf(par2CoordinateSplit[0]),
+                Integer.valueOf(par2CoordinateSplit[1]));
 
-        List<String> lines = FileUtils.readLines(intervalList);
+        List<String> lines = FileUtils.readLines(bed);
 
         if (numberOfSubsets >= lines.size()) {
             logger.error("Number of subsets is greater than the number of rows");
@@ -95,7 +97,8 @@ public class SureSelectTriggerSplitter extends Module {
 
         File ploidyBedFile = new File(workDirectory, String.format("%s.ploidy.bed", outputPrefix));
 
-        try (FileWriter ploidyFW = new FileWriter(ploidyBedFile); BufferedWriter ploidyBW = new BufferedWriter(ploidyFW)) {
+        try (FileWriter ploidyFW = new FileWriter(ploidyBedFile);
+                BufferedWriter ploidyBW = new BufferedWriter(ploidyFW)) {
 
             int previousChunkIndex = 0;
             for (int i = 0; i < numberOfSubsets; ++i) {
@@ -105,15 +108,19 @@ public class SureSelectTriggerSplitter extends Module {
                     currentChunkIndex = lines.size();
                 }
                 List<String> subLines = lines.subList(previousChunkIndex, currentChunkIndex);
-                File intervalBedFile = new File(workDirectory, String.format("%s.interval.set%d.bed", outputPrefix, i + 1));
-                try (FileWriter intervalFW = new FileWriter(intervalBedFile); BufferedWriter intervalBW = new BufferedWriter(intervalFW)) {
-                    for (String line : subLines) {
-                        String[] lineSplit = line.split(":");
-                        String chromosome = lineSplit[0];
-                        String range = lineSplit[1];
-                        String[] rangeSplit = range.split("-");
 
-                        Range<Integer> r = Range.between(Integer.valueOf(rangeSplit[0]), Integer.valueOf(rangeSplit[1]));
+                File intervalBedFile = new File(workDirectory,
+                        String.format("%s.interval.set%d.bed", outputPrefix, i + 1));
+
+                try (FileWriter intervalFW = new FileWriter(intervalBedFile);
+                        BufferedWriter intervalBW = new BufferedWriter(intervalFW)) {
+
+                    for (String line : subLines) {
+
+                        String[] lineSplit = line.split("\t");
+                        String chromosome = lineSplit[0];
+
+                        Range<Integer> r = Range.between(Integer.valueOf(lineSplit[1]), Integer.valueOf(lineSplit[2]));
 
                         intervalBW.write(String.format("%s\t%d\t%d", chromosome, r.getMinimum() - 1, r.getMaximum()));
                         intervalBW.newLine();
@@ -121,16 +128,16 @@ public class SureSelectTriggerSplitter extends Module {
 
                         if (chromosome.contains("NC_000023")) {
                             if ("M".equals(gender) && (p1Range.isBeforeRange(r) || p2Range.isBeforeRange(r))) {
-                                ploidyBW.write(String.format("%s\t%d\t%d\t%s\t%d", chromosome, r.getMinimum() - 1, r.getMaximum(),
-                                        subjectName, 1));
+                                ploidyBW.write(String.format("%s\t%d\t%d\t%s\t%d", chromosome, r.getMinimum() - 1,
+                                        r.getMaximum(), subjectName, 1));
                                 ploidyBW.newLine();
                                 ploidyBW.flush();
                             }
                         }
 
                         if (chromosome.contains("NC_000024")) {
-                            ploidyBW.write(String.format("%s\t%d\t%d\t%s\t%d", chromosome, r.getMinimum() - 1, r.getMaximum(), subjectName,
-                                    "F".equals(gender) ? 0 : 1));
+                            ploidyBW.write(String.format("%s\t%d\t%d\t%s\t%d", chromosome, r.getMinimum() - 1,
+                                    r.getMaximum(), subjectName, "F".equals(gender) ? 0 : 1));
                             ploidyBW.newLine();
                             ploidyBW.flush();
                         }
@@ -156,12 +163,12 @@ public class SureSelectTriggerSplitter extends Module {
         this.workDirectory = workDirectory;
     }
 
-    public File getIntervalList() {
-        return intervalList;
+    public File getBed() {
+        return bed;
     }
 
-    public void setIntervalList(File intervalList) {
-        this.intervalList = intervalList;
+    public void setBed(File bed) {
+        this.bed = bed;
     }
 
     public String getGender() {
@@ -215,8 +222,8 @@ public class SureSelectTriggerSplitter extends Module {
     @Override
     public String toString() {
         return String.format(
-                "SureSelectTriggerSplitter [intervalList=%s, subjectName=%s, gender=%s, numberOfSubsets=%s, par1Coordinate=%s, par2Coordinate=%s, outputPrefix=%s]",
-                intervalList, subjectName, gender, numberOfSubsets, par1Coordinate, par2Coordinate, outputPrefix);
+                "SureSelectTriggerSplitter [bed=%s, subjectName=%s, gender=%s, numberOfSubsets=%s, par1Coordinate=%s, par2Coordinate=%s, outputPrefix=%s]",
+                bed, subjectName, gender, numberOfSubsets, par1Coordinate, par2Coordinate, outputPrefix);
     }
 
     public static void main(String[] args) {
@@ -228,7 +235,7 @@ public class SureSelectTriggerSplitter extends Module {
         module.setPar1Coordinate("10001-2781479");
         module.setPar2Coordinate("155701383-156030895");
         module.setGender("M");
-        module.setIntervalList(new File("/tmp", "agilent_v4_capture_region_pm_75.shortid.interval_list"));
+        module.setBed(new File("/tmp", "agilent_v4_capture_region_pm_75.shortid.bed"));
         module.setOutputPrefix("qwer");
         try {
             module.call();
