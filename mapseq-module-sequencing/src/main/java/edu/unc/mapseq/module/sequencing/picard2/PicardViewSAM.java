@@ -26,7 +26,7 @@ public class PicardViewSAM extends Module {
 
     @NotNull(message = "Output is required", groups = InputValidations.class)
     @FileIsNotEmpty(message = "output file is empty", groups = OutputValidations.class)
-    @OutputArgument(flag = "OUTPUT", delimiter = "=", persistFileData = true, mimeType = MimeType.APPLICATION_BAM)
+    @OutputArgument(redirect = true, persistFileData = true, mimeType = MimeType.APPLICATION_BAM)
     private File output;
 
     @NotNull(message = "alignmentStatus is required", groups = InputValidations.class)
@@ -53,6 +53,9 @@ public class PicardViewSAM extends Module {
 
     @InputArgument(flag = "MAX_RECORDS_IN_RAM", delimiter = "=")
     private Integer maxRecordsInRAM = 1000000;
+
+    @InputArgument(flag = "CREATE_INDEX", delimiter = "=")
+    private Boolean createIndex = Boolean.FALSE;
 
     public PicardViewSAM() {
         super();
@@ -131,6 +134,14 @@ public class PicardViewSAM extends Module {
 
     public void setMaxRecordsInRAM(Integer maxRecordsInRAM) {
         this.maxRecordsInRAM = maxRecordsInRAM;
+    }
+
+    public Boolean getCreateIndex() {
+        return createIndex;
+    }
+
+    public void setCreateIndex(Boolean createIndex) {
+        this.createIndex = createIndex;
     }
 
     @Override

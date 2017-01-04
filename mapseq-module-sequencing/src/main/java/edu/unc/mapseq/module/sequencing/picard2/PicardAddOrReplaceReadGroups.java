@@ -60,6 +60,9 @@ public class PicardAddOrReplaceReadGroups extends Module {
     @InputArgument(flag = "MAX_RECORDS_IN_RAM", delimiter = "=")
     private Integer maxRecordsInRAM = 1000000;
 
+    @InputArgument(flag = "CREATE_INDEX", delimiter = "=")
+    private Boolean createIndex = Boolean.FALSE;
+
     public PicardAddOrReplaceReadGroups() {
         super();
     }
@@ -71,7 +74,16 @@ public class PicardAddOrReplaceReadGroups extends Module {
 
     @Override
     public String getExecutable() {
-        return String.format(getModuleClass().getAnnotation(Application.class).executable(), getWorkflowName().toUpperCase());
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
+    }
+
+    public Boolean getCreateIndex() {
+        return createIndex;
+    }
+
+    public void setCreateIndex(Boolean createIndex) {
+        this.createIndex = createIndex;
     }
 
     public Integer getMaxRecordsInRAM() {
@@ -158,8 +170,8 @@ public class PicardAddOrReplaceReadGroups extends Module {
     public String toString() {
         return String.format(
                 "PicardAddOrReplaceReadGroups [input=%s, output=%s, sortOrder=%s, readGroupId=%s, readGroupLibrary=%s, readGroupPlatform=%s, readGroupPlatformUnit=%s, readGroupSampleName=%s, readGroupCenterName=%s, maxRecordsInRAM=%s]",
-                input, output, sortOrder, readGroupId, readGroupLibrary, readGroupPlatform, readGroupPlatformUnit, readGroupSampleName,
-                readGroupCenterName, maxRecordsInRAM);
+                input, output, sortOrder, readGroupId, readGroupLibrary, readGroupPlatform, readGroupPlatformUnit,
+                readGroupSampleName, readGroupCenterName, maxRecordsInRAM);
     }
 
     public static void main(String[] args) {
