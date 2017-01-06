@@ -1,10 +1,11 @@
 package edu.unc.mapseq.module.sequencing.casava;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.renci.common.exec.BashExecutor;
 import org.renci.common.exec.CommandInput;
 import org.renci.common.exec.CommandOutput;
@@ -23,13 +24,7 @@ import edu.unc.mapseq.module.annotations.InputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-/**
- * 
- * @author jdr0887
- * 
- */
 @Application(name = "ConfigureBCLToFastQ", executable = "$PERL_HOME/bin/perl $%s_CASAVA_HOME/bin/configureBclToFastq.pl")
-// @Application(name = "ConfigureBCLToFastQ", executable = "$%s_CASAVA_HOME/bin/configureBclToFastq.pl")
 public class ConfigureBCLToFastq extends Module {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigureBCLToFastq.class);
@@ -62,15 +57,6 @@ public class ConfigureBCLToFastq extends Module {
     private Boolean mismatches;
 
     @InputArgument
-    private Integer indexLength;
-
-    @InputArgument
-    private String read1Length;
-
-    @InputArgument
-    private String read2Length;
-
-    @InputArgument
     private Boolean ignoreMissingStats;
 
     @InputArgument
@@ -86,7 +72,8 @@ public class ConfigureBCLToFastq extends Module {
     }
 
     public String getExecutable() {
-        return String.format(getModuleClass().getAnnotation(Application.class).executable(), getWorkflowName().toUpperCase());
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
     }
 
     @Override
@@ -113,12 +100,6 @@ public class ConfigureBCLToFastq extends Module {
                 command.append(" --force");
             }
 
-            if (StringUtils.isNotEmpty(read1Length) && StringUtils.isNotEmpty(read2Length) && indexLength != null) {
-                command.append(String.format(" --use-bases-mask Y%s,I%d,Y%s", read1Length, indexLength, read2Length));
-            } else if (indexLength != null) {
-                command.append(String.format(" --use-bases-mask Y*,I%d,Y*", indexLength));
-            }
-
             if (mismatches != null && mismatches) {
                 command.append(" --mismatches 1");
             }
@@ -131,8 +112,24 @@ public class ConfigureBCLToFastq extends Module {
                 command.append(" --ignore-missing-stats");
             }
 
-        } catch (SecurityException e1) {
-            e1.printStackTrace();
+            try (FileReader fr = new FileReader(sampleSheet); BufferedReader br = new BufferedReader(fr)) {
+                // skip header
+                br.readLine();
+                String line = br.readLine();
+                String[] lineSplit = line.split(",");
+                String index = lineSplit[4];
+                if (index.contains("-")) {
+                    String index1Length = index.substring(0, index.indexOf("-"));
+                    String index2Length = index.substring(index.indexOf("-") + 1, index.length());
+                    command.append(String.format(" --use-bases-mask Y*,I%d,I%d,Y*", index1Length.length(),
+                            index2Length.length()));
+                } else {
+                    command.append(String.format(" --use-bases-mask Y*,I%d,Y*", index.length()));
+                }
+            }
+
+        } catch (Exception e) {
+            throw new ModuleException(e);
         }
 
         commandInput.setCommand(command.toString());
@@ -179,30 +176,6 @@ public class ConfigureBCLToFastq extends Module {
         this.force = force;
     }
 
-    public Integer getIndexLength() {
-        return indexLength;
-    }
-
-    public void setIndexLength(Integer indexLength) {
-        this.indexLength = indexLength;
-    }
-
-    public String getRead1Length() {
-        return read1Length;
-    }
-
-    public void setRead1Length(String read1Length) {
-        this.read1Length = read1Length;
-    }
-
-    public String getRead2Length() {
-        return read2Length;
-    }
-
-    public void setRead2Length(String read2Length) {
-        this.read2Length = read2Length;
-    }
-
     public Integer getFastqClusterCount() {
         return fastqClusterCount;
     }
@@ -246,9 +219,9 @@ public class ConfigureBCLToFastq extends Module {
     @Override
     public String toString() {
         return String.format(
-                "ConfigureBCLToFastq [outputDir=%s, fastqClusterCount=%s, inputDir=%s, sampleSheet=%s, force=%s, ignoreMissingBCL=%s, mismatches=%s, indexLength=%s, read1Length=%s, read2Length=%s, ignoreMissingStats=%s, tiles=%s, toString()=%s]",
-                outputDir, fastqClusterCount, inputDir, sampleSheet, force, ignoreMissingBCL, mismatches, indexLength, read1Length,
-                read2Length, ignoreMissingStats, tiles, super.toString());
+                "ConfigureBCLToFastq [outputDir=%s, fastqClusterCount=%s, inputDir=%s, sampleSheet=%s, force=%s, ignoreMissingBCL=%s, mismatches=%s, ignoreMissingStats=%s, tiles=%s, toString()=%s]",
+                outputDir, fastqClusterCount, inputDir, sampleSheet, force, ignoreMissingBCL, mismatches,
+                ignoreMissingStats, tiles, super.toString());
     }
 
     public static void main(String[] args) {
@@ -259,7 +232,6 @@ public class ConfigureBCLToFastq extends Module {
         module.setMismatches(Boolean.TRUE);
         module.setIgnoreMissingBCL(Boolean.TRUE);
         module.setIgnoreMissingStats(Boolean.TRUE);
-        module.setIndexLength(8);
         module.setFastqClusterCount(0);
         module.setTiles(1);
         module.setOutputDir(new File("outputdir"));
