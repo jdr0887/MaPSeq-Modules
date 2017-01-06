@@ -21,6 +21,18 @@ import com.google.common.io.InputSupplier;
 public class Scratch {
 
     @Test
+    public void testMask() {
+        String index = "ATTACTC-TATAGCC";
+        String index1Length = index.substring(0, index.indexOf("-"));
+        String index2Length = index.substring(index.indexOf("-") + 1, index.length());
+        System.out.println(
+                String.format(" --use-bases-mask Y*,I%d,I%d,Y*", index1Length.length(), index2Length.length()));
+
+        index = "TATAGCC";
+        System.out.println(String.format(" --use-bases-mask Y*,I%d,Y*", index.length()));
+    }
+
+    @Test
     public void asdf() {
         List<String> argumentList = new ArrayList<String>();
 
@@ -41,13 +53,14 @@ public class Scratch {
         argumentList.add("INPUT=asdf");
 
         System.out.println(StringUtils.join(argumentList, " "));
-        
+
     }
 
     @Test
     public void scratch() {
 
-        System.out.println(String.format("%2$s%1$s%3$s%1$s%4$s", File.separator, "asdf", "generate-sources", "modules"));
+        System.out
+                .println(String.format("%2$s%1$s%3$s%1$s%4$s", File.separator, "asdf", "generate-sources", "modules"));
 
         // DecimalFormat df = new DecimalFormat();
         // df.setMaximumFractionDigits(6);
