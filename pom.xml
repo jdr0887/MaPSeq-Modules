@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>edu.unc.mapseq</groupId>
   <artifactId>modules</artifactId>
-  <version>0.6.10-SNAPSHOT</version>
+  <version>0.6.10</version>
   <packaging>pom</packaging>
   <properties>
     <mapseq.version>0.6.48</mapseq.version>
@@ -28,7 +28,7 @@
     <url>https://github.com/jdr0887/MaPSeq-Modules</url>
     <developerConnection>scm:git:git@github.com:jdr0887/MaPSeq-Modules.git</developerConnection>
     <connection>scm:git:git@github.com:jdr0887/MaPSeq-Modules.git</connection>
-    <tag>HEAD</tag>
+    <tag>modules-0.6.10</tag>
   </scm>
   <dependencyManagement>
     <dependencies>
@@ -115,7 +115,7 @@
       <dependency>
 	<groupId>edu.unc.mapseq.modules</groupId>
 	<artifactId>mapseq-module-cli-generator</artifactId>
-	<version>0.6.10-SNAPSHOT</version>
+	<version>0.6.10</version>
       </dependency> 
     </dependencies>
   </dependencyManagement>
