@@ -1,30 +1,24 @@
 package edu.unc.mapseq.module.core;
 
 import java.io.File;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
+import org.renci.common.exec.BashExecutor;
+import org.renci.common.exec.CommandInput;
+import org.renci.common.exec.CommandOutput;
+import org.renci.common.exec.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.unc.mapseq.dao.model.FileData;
 import edu.unc.mapseq.dao.model.MimeType;
-import edu.unc.mapseq.module.DefaultModuleOutput;
 import edu.unc.mapseq.module.Module;
+import edu.unc.mapseq.module.ModuleException;
 import edu.unc.mapseq.module.ModuleOutput;
+import edu.unc.mapseq.module.ShellModuleOutput;
 import edu.unc.mapseq.module.annotations.Application;
 import edu.unc.mapseq.module.annotations.InputArgument;
 import edu.unc.mapseq.module.annotations.InputValidations;
@@ -38,10 +32,14 @@ import edu.unc.mapseq.module.constraints.FileListIsReadable;
  * @author jdr0887
  * 
  */
-@Application(name = "Zip", isWorkflowRunIdOptional = true)
+@Application(name = "Zip", isWorkflowRunIdOptional = true, executable = "/usr/bin/zip")
 public class Zip extends Module {
 
     private static final Logger logger = LoggerFactory.getLogger(Zip.class);
+
+    @NotNull(message = "workDir is required", groups = InputValidations.class)
+    @InputArgument
+    private File workDir;
 
     @NotNull(message = "Zip is required", groups = InputValidations.class)
     @FileIsReadable(message = "Zip file does is not readable", groups = OutputValidations.class)
@@ -70,43 +68,32 @@ public class Zip extends Module {
     @Override
     public ModuleOutput call() throws Exception {
         logger.debug("ENTERING call()");
-        DefaultModuleOutput moduleOutput = new DefaultModuleOutput();
-        moduleOutput.setExitCode(0);
+        ShellModuleOutput ret = null;
         try {
-            Map<String, String> env = new HashMap<>();
-            env.put("create", "true");
-            URI uri = URI.create(String.format("jar:file:%s", output.getAbsolutePath()));
-            StringBuilder messages = new StringBuilder();
-            try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
-                for (File f : entry) {
-                    Path externalPath = f.toPath();
-                    Path internalPath = zipfs.getPath(String.format("/%s", f.getName()));
-                    String message = String.format("adding %s to %s in %s", externalPath.toString(),
-                            internalPath.toString(), output.getAbsolutePath());
-                    messages.append(message).append(System.getProperty("line.separator"));
-                    logger.info(message);
-                    Files.copy(externalPath, internalPath, StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            moduleOutput.getOutput().append(messages);
-            Set<PosixFilePermission> permissions = new HashSet<>();
-            permissions.add(PosixFilePermission.OWNER_READ);
-            permissions.add(PosixFilePermission.OWNER_WRITE);
-            permissions.add(PosixFilePermission.GROUP_READ);
-            permissions.add(PosixFilePermission.GROUP_WRITE);
-            permissions.add(PosixFilePermission.OTHERS_READ);
 
-            Files.setPosixFilePermissions(output.toPath(), permissions);
+            StringBuilder command = new StringBuilder(getModuleClass().getAnnotation(Application.class).executable());
+            command.append(" ").append(output.getAbsolutePath());
+            for (File f : entry) {
+                command.append(" ").append(f.getName());
+            }
+
+            CommandInput commandInput = new CommandInput();
+            commandInput.setWorkDir(workDir);
+            commandInput.setCommand(command.toString());
+
+            Executor executor = BashExecutor.getInstance();
+            CommandOutput commandOutput = executor.execute(commandInput);
+
+            ret = new ShellModuleOutput(commandOutput);
 
             FileData fileData = new FileData(output.getName(), output.getParentFile().getAbsolutePath(),
                     MimeType.APPLICATION_ZIP);
             getFileDatas().add(fileData);
 
         } catch (Exception e) {
-            moduleOutput.setExitCode(-1);
-            moduleOutput.getError().append(e.getMessage());
+            throw new ModuleException(e);
         }
-        return moduleOutput;
+        return ret;
     }
 
     public File getOutput() {
@@ -125,6 +112,14 @@ public class Zip extends Module {
         this.entry = entry;
     }
 
+    public File getWorkDir() {
+        return workDir;
+    }
+
+    public void setWorkDir(File workDir) {
+        this.workDir = workDir;
+    }
+
     @Override
     public String toString() {
         return String.format("Zip [output=%s, entry=%s, toString()=%s]", output, entry, super.toString());
@@ -134,6 +129,7 @@ public class Zip extends Module {
         try {
             Zip module = new Zip();
             module.setWorkflowName("TEST");
+            module.setWorkDir(new File(System.getProperty("java.io.tmpdir")));
             module.setEntry(Arrays.asList(new File("/tmp", "asdf.txt"), new File("/tmp", "zxcv.txt")));
             module.setOutput(new File("/tmp", "asdf.zip"));
             ModuleOutput output = module.call();
