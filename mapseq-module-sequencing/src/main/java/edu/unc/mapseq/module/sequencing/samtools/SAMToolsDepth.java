@@ -49,7 +49,8 @@ public class SAMToolsDepth extends Module {
 
     @Override
     public String getExecutable() {
-        return String.format(getModuleClass().getAnnotation(Application.class).executable(), getWorkflowName().toUpperCase());
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
     }
 
     public File getBed() {
@@ -94,21 +95,22 @@ public class SAMToolsDepth extends Module {
 
     @Override
     public String toString() {
-        return String.format("SAMToolsDepth [bed=%s, bam=%s, baseQuality=%s, mappingQuality=%s, output=%s]", bed, bam, baseQuality,
-                mappingQuality, output);
+        return String.format("SAMToolsDepth [bed=%s, bam=%s, baseQuality=%s, mappingQuality=%s, output=%s]", bed, bam,
+                baseQuality, mappingQuality, output);
     }
 
     public static void main(String[] args) {
         /// projects/mapseq/apps/samtools-1.3.1/bin/samtools depth -b
         /// /projects/mapseq/data/resources/intervals/gs/GS_439_Target_Intervals_build37.bed ./NCG_00300R09.merged.bam >
         /// NCG_00300R09.merged.samtools.depth.txt
-
-        SAMToolsDepth module = new SAMToolsDepth();
-        module.setWorkflowName("TEST");
-        module.setBed(new File("/tmp", "qwer.bed"));
-        module.setBam(new File("/tmp", "asdf.bam"));
-        module.setOutput(new File("/tmp", "zxcv.txt"));
         try {
+            SAMToolsDepth module = new SAMToolsDepth();
+            module.setWorkflowName("TEST");
+            module.setBed(new File("/tmp", "/projects/mapseq/data/resources/intervals/gs/GS_439_Target_Intervals_build37.bed"));
+            module.setBam(new File("/tmp", "asdf.bam"));
+            module.setMappingQuality(20);
+            module.setBaseQuality(20);
+            module.setOutput(new File("/tmp", "zxcv.depth.txt"));
             module.call();
         } catch (Exception e) {
             e.printStackTrace();
