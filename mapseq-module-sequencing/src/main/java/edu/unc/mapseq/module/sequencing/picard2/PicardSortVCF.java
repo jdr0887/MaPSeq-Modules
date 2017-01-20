@@ -14,7 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "PicardSortVCF", executable = "$JAVA7_HOME/bin/java -Xmx4g -jar $%s_PICARD2_HOME/picard.jar SortVcf")
+@Application(name = "PicardSortVCF", executable = "$JAVA7_HOME/bin/java -Xmx4g -jar $%s_PICARD2_HOME/picard.jar SortVcf TMP_DIR=$MAPSEQ_CLIENT_HOME/tmp VALIDATION_STRINGENCY=SILENT")
 public class PicardSortVCF extends Module {
 
     @NotNull(message = "Input is required", groups = InputValidations.class)
@@ -29,6 +29,9 @@ public class PicardSortVCF extends Module {
     @OutputArgument(flag = "OUTPUT", delimiter = "=", persistFileData = true, mimeType = MimeType.TEXT_VCF)
     private File output;
 
+    @InputArgument(flag = "MAX_RECORDS_IN_RAM", delimiter = "=")
+    private Integer maxRecordsInRAM = 1000000;
+
     public PicardSortVCF() {
         super();
     }
@@ -42,6 +45,14 @@ public class PicardSortVCF extends Module {
     public String getExecutable() {
         return String.format(getModuleClass().getAnnotation(Application.class).executable(),
                 getWorkflowName().toUpperCase());
+    }
+
+    public Integer getMaxRecordsInRAM() {
+        return maxRecordsInRAM;
+    }
+
+    public void setMaxRecordsInRAM(Integer maxRecordsInRAM) {
+        this.maxRecordsInRAM = maxRecordsInRAM;
     }
 
     public File getInput() {
