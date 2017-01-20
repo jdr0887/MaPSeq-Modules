@@ -40,13 +40,16 @@ public class GATKVariantAnnotator extends Module {
     private File bam;
 
     @NotNull(message = "annotation is required", groups = InputValidations.class)
-    @Contains(values = { "FisherStrand", "QualByDepth", "ReadPosRankSumTest", "DepthPerAlleleBySample", "HomopolymerRun",
-            "SpanningDeletions" })
+    @Contains(values = { "FisherStrand", "QualByDepth", "ReadPosRankSumTest", "DepthPerAlleleBySample",
+            "HomopolymerRun", "SpanningDeletions" })
     @InputArgument(flag = "-A")
     private List<String> annotation;
 
     @InputArgument(flag = "--phone_home")
     private String phoneHome;
+
+    @InputArgument(flag = "--num_threads")
+    private Integer numberOfThreads = 1;
 
     @Override
     public Class<?> getModuleClass() {
@@ -55,7 +58,8 @@ public class GATKVariantAnnotator extends Module {
 
     @Override
     public String getExecutable() {
-        return String.format(getModuleClass().getAnnotation(Application.class).executable(), getWorkflowName().toUpperCase());
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
     }
 
     public String getPhoneHome() {
@@ -72,6 +76,14 @@ public class GATKVariantAnnotator extends Module {
 
     public void setReferenceSequence(File referenceSequence) {
         this.referenceSequence = referenceSequence;
+    }
+
+    public Integer getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public void setNumberOfThreads(Integer numberOfThreads) {
+        this.numberOfThreads = numberOfThreads;
     }
 
     public File getVcf() {
@@ -108,8 +120,8 @@ public class GATKVariantAnnotator extends Module {
 
     @Override
     public String toString() {
-        return String.format("GATKVariantAnnotator [referenceSequence=%s, vcf=%s, out=%s, bam=%s, annotation=%s]", referenceSequence, vcf,
-                out, bam, annotation);
+        return String.format("GATKVariantAnnotator [referenceSequence=%s, vcf=%s, out=%s, bam=%s, annotation=%s]",
+                referenceSequence, vcf, out, bam, annotation);
     }
 
     public static void main(String[] args) {
@@ -117,8 +129,8 @@ public class GATKVariantAnnotator extends Module {
         GATKVariantAnnotator module = new GATKVariantAnnotator();
         module.setWorkflowName("NCGENES");
         module.setPhoneHome("NO_ET");
-        module.setReferenceSequence(
-                new File("/proj/renci/sequence_analysis/references/BUILD.37.1/bwa061sam0118", "BUILD.37.1.sorted.shortid.fa"));
+        module.setReferenceSequence(new File("/proj/renci/sequence_analysis/references/BUILD.37.1/bwa061sam0118",
+                "BUILD.37.1.sorted.shortid.fa"));
         module.setVcf(new File("/tmp", "freebayes.vcf"));
         module.setBam(new File("/tmp", "asdf.bam"));
         module.setOut(new File("/tmp", "gatk.vcf"));
