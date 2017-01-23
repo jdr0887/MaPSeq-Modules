@@ -12,7 +12,7 @@ import edu.unc.mapseq.module.annotations.InputArgument;
 import edu.unc.mapseq.module.annotations.InputValidations;
 import edu.unc.mapseq.module.annotations.OutputArgument;
 
-@Application(name = "VCFFilter", executable = "%s_VCFLIB_HOME/bin/vcffilter")
+@Application(name = "VCFFilter", executable = "$%s_VCFLIB_HOME/bin/vcffilter")
 public class VCFFilter extends Module {
 
     @NotNull(message = "input is required", groups = InputValidations.class)
