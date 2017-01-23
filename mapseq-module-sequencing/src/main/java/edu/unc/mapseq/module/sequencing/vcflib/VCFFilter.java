@@ -59,6 +59,12 @@ public class VCFFilter extends Module {
         return VCFFilter.class;
     }
 
+    @Override
+    public String getExecutable() {
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
+    }
+
     public File getInput() {
         return input;
     }
