@@ -23,10 +23,10 @@ public class VCFFilter extends Module {
     @OutputArgument(redirect = true)
     private File output;
 
-    @InputArgument(flag = "--info-filter", wrapValueInSingleQuotes = true)
+    @InputArgument(flag = "--info-filter")
     private List<String> infoFilter;
 
-    @InputArgument(flag = "--genotype-filter", wrapValueInSingleQuotes = true)
+    @InputArgument(flag = "--genotype-filter")
     private List<String> genotypeFilter;
 
     @InputArgument(flag = "--keep-info")
@@ -167,7 +167,7 @@ public class VCFFilter extends Module {
             module.setWorkflowName("TEST");
             module.setInput(new File("/tmp", "input.vcf"));
             module.setOutput(new File("/tmp", "output.vcf"));
-            module.setInfoFilter(Arrays.asList("QUAL>20", "DP>5"));
+            module.setInfoFilter(Arrays.asList("'QUAL > 20'", "'DP > 5'"));
             module.call();
         } catch (Exception e) {
             e.printStackTrace();
