@@ -238,7 +238,7 @@ public class VCFFilter extends Module {
             module.setWorkflowName("TEST");
             module.setInput(new File("/tmp", "input.vcf"));
             module.setOutput(new File("/tmp", "output.vcf"));
-            module.setInfoFilter(Arrays.asList("QUAL > 10", "DP > 5"));
+            module.setInfoFilter(Arrays.asList("QUAL_>_10", "DP_>_5"));
             module.call();
         } catch (Exception e) {
             e.printStackTrace();
