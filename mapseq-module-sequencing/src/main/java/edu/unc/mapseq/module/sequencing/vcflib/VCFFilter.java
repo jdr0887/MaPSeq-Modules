@@ -6,7 +6,20 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.renci.common.exec.BashExecutor;
+import org.renci.common.exec.CommandInput;
+import org.renci.common.exec.CommandOutput;
+import org.renci.common.exec.Executor;
+import org.renci.common.exec.ExecutorException;
+
+import edu.unc.mapseq.dao.model.FileData;
+import edu.unc.mapseq.dao.model.MimeType;
 import edu.unc.mapseq.module.Module;
+import edu.unc.mapseq.module.ModuleException;
+import edu.unc.mapseq.module.ModuleOutput;
+import edu.unc.mapseq.module.ShellModuleOutput;
 import edu.unc.mapseq.module.annotations.Application;
 import edu.unc.mapseq.module.annotations.InputArgument;
 import edu.unc.mapseq.module.annotations.InputValidations;
@@ -23,10 +36,10 @@ public class VCFFilter extends Module {
     @OutputArgument(redirect = true)
     private File output;
 
-    @InputArgument(flag = "--info-filter")
+    @InputArgument(flag = "--info-filter", wrapValueInSingleQuotes = true)
     private List<String> infoFilter;
 
-    @InputArgument(flag = "--genotype-filter")
+    @InputArgument(flag = "--genotype-filter", wrapValueInSingleQuotes = true)
     private List<String> genotypeFilter;
 
     @InputArgument(flag = "--keep-info")
@@ -63,6 +76,64 @@ public class VCFFilter extends Module {
     public String getExecutable() {
         return String.format(getModuleClass().getAnnotation(Application.class).executable(),
                 getWorkflowName().toUpperCase());
+    }
+
+    @Override
+    public ModuleOutput call() throws Exception {
+        CommandInput commandInput = new CommandInput();
+        StringBuilder command = new StringBuilder(getExecutable());
+
+        if (CollectionUtils.isNotEmpty(infoFilter)) {
+            infoFilter.forEach(a -> command.append(" --info-filter '").append(a.replaceAll("_", " ")).append("'"));
+        }
+
+        if (CollectionUtils.isNotEmpty(genotypeFilter)) {
+            genotypeFilter
+                    .forEach(a -> command.append(" --genotype-filter '").append(a.replaceAll("_", " ")).append("'"));
+        }
+
+        if (keepInfo != null && keepInfo) {
+            command.append(" --keep-info");
+        }
+
+        if (filterSites != null && filterSites) {
+            command.append(" --filter-sites");
+        }
+
+        if (appendFilter != null && appendFilter) {
+            command.append(" --append-filter");
+        }
+
+        if (invert != null && invert) {
+            command.append(" --invert");
+        }
+
+        if (or != null && or) {
+            command.append(" --or");
+        }
+
+        if (StringUtils.isNotEmpty(tagFail)) {
+            command.append(" --tag-fail '").append(tagFail).append("'");
+        }
+
+        if (StringUtils.isNotEmpty(tagPass)) {
+            command.append(" --tag-pass '").append(tagPass).append("'");
+        }
+
+        command.append(String.format(" %s > %s", input.getAbsolutePath(), output.getAbsolutePath()));
+        commandInput.setCommand(command.toString());
+        CommandOutput commandOutput;
+        try {
+            Executor executor = BashExecutor.getInstance();
+            commandOutput = executor.execute(commandInput);
+        } catch (ExecutorException e) {
+            throw new ModuleException(e);
+        }
+        FileData fm = new FileData();
+        fm.setMimeType(MimeType.TEXT_VCF);
+        fm.setName(output.getName());
+        getFileDatas().add(fm);
+        return new ShellModuleOutput(commandOutput);
     }
 
     public File getInput() {
@@ -167,7 +238,7 @@ public class VCFFilter extends Module {
             module.setWorkflowName("TEST");
             module.setInput(new File("/tmp", "input.vcf"));
             module.setOutput(new File("/tmp", "output.vcf"));
-            module.setInfoFilter(Arrays.asList("'QUAL > 20'", "'DP > 5'"));
+            module.setInfoFilter(Arrays.asList("QUAL > 10", "DP > 5"));
             module.call();
         } catch (Exception e) {
             e.printStackTrace();
