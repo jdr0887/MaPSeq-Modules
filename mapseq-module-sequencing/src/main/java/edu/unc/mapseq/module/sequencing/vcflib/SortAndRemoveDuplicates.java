@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import edu.unc.mapseq.module.Module;
 import edu.unc.mapseq.module.annotations.Application;
+import edu.unc.mapseq.module.annotations.InputArgument;
 import edu.unc.mapseq.module.annotations.InputValidations;
 import edu.unc.mapseq.module.annotations.OutputArgument;
 
@@ -13,6 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputArgument;
 public class SortAndRemoveDuplicates extends Module {
 
     @NotNull(message = "input is required", groups = InputValidations.class)
+    @InputArgument(disabled = true)
     private File input;
 
     @NotNull(message = "output is required", groups = InputValidations.class)
