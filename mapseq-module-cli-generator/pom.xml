@@ -10,6 +10,9 @@
   <artifactId>mapseq-module-cli-generator</artifactId>
   <version>0.6.19-SNAPSHOT</version>
   <packaging>jar</packaging>
+  <properties>
+    <maven.site.plugin.skip>true</maven.site.plugin.skip>
+  </properties>    
   <dependencies>
     <dependency>
       <groupId>org.apache.openjpa</groupId>
