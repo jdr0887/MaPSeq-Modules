@@ -2,7 +2,7 @@
   <parent>
     <groupId>edu.unc.mapseq</groupId>
     <artifactId>mapseq</artifactId>
-    <version>0.1.37</version>
+    <version>0.1.39</version>
   </parent>
   <name>MaPSeq :: Modules</name>
   <modelVersion>4.0.0</modelVersion>
