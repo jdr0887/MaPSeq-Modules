@@ -16,7 +16,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.Contains;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "GATKApplyRecalibration", executable = "$JAVA7_HOME/bin/java -Xmx4g -Djava.io.tmpdir=$MAPSEQ_CLIENT_HOME/tmp -jar $%s_GATK2_HOME/GenomeAnalysisTK.jar --analysis_type VariantAnnotator")
+@Application(name = "GATKApplyRecalibration", executable = "$JAVA8_HOME/bin/java -Xmx4g -Djava.io.tmpdir=$MAPSEQ_CLIENT_HOME/tmp -jar $%s_GATK3_HOME/GenomeAnalysisTK.jar --analysis_type VariantAnnotator")
 public class GATKVariantAnnotator extends Module {
 
     @NotNull(message = "referenceSequence is required", groups = InputValidations.class)

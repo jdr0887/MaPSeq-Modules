@@ -14,7 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "PicardSortVCF", executable = "$JAVA7_HOME/bin/java -Xmx4g -jar $%s_PICARD2_HOME/picard.jar SortVcf TMP_DIR=$MAPSEQ_CLIENT_HOME/tmp VALIDATION_STRINGENCY=SILENT")
+@Application(name = "PicardSortVCF", executable = "$JAVA8_HOME/bin/java -Xmx4g -jar $%s_PICARD2_HOME/picard.jar SortVcf TMP_DIR=$MAPSEQ_CLIENT_HOME/tmp VALIDATION_STRINGENCY=SILENT")
 public class PicardSortVCF extends Module {
 
     @NotNull(message = "Input is required", groups = InputValidations.class)
