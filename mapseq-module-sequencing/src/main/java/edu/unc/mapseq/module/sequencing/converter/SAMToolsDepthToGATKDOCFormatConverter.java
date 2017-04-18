@@ -4,6 +4,7 @@ import java.io.File;
 
 import javax.validation.constraints.NotNull;
 
+import edu.unc.mapseq.dao.model.MimeType;
 import edu.unc.mapseq.module.Module;
 import edu.unc.mapseq.module.annotations.Application;
 import edu.unc.mapseq.module.annotations.InputArgument;
@@ -34,7 +35,7 @@ public class SAMToolsDepthToGATKDOCFormatConverter extends Module {
     @NotNull(message = "output is required", groups = InputValidations.class)
     @FileIsNotEmpty(message = "output is empty", groups = OutputValidations.class)
     @FileIsReadable(message = "output is not readable", groups = OutputValidations.class)
-    @OutputArgument(flag = "-o")
+    @OutputArgument(flag = "-o", mimeType = MimeType.TEXT_PLAIN, persistFileData = true)
     private File output;
 
     public SAMToolsDepthToGATKDOCFormatConverter() {
