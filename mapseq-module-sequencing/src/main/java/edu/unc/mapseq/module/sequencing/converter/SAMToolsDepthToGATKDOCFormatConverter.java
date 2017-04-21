@@ -14,7 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "SAMToolsDepthToGATKDOCFormatConverter", executable = "$JAVA8_HOME/bin/java -Xmx42g -jar $%s_SEQUENCING_TOOLS/interval-format-converter.jar")
+@Application(name = "SAMToolsDepthToGATKDOCFormatConverter", executable = "$JAVA8_HOME/bin/java -Xmx40g -jar $%s_SEQUENCING_TOOLS/interval-format-converter.jar")
 public class SAMToolsDepthToGATKDOCFormatConverter extends Module {
 
     @NotNull(message = "input is required", groups = InputValidations.class)
@@ -22,9 +22,6 @@ public class SAMToolsDepthToGATKDOCFormatConverter extends Module {
     @FileIsReadable(message = "input is not readable", groups = InputValidations.class)
     @InputArgument(flag = "-i")
     private File input;
-
-    @InputArgument(flag = "-t")
-    private Integer threads;
 
     @NotNull(message = "intervals is required", groups = InputValidations.class)
     @FileIsNotEmpty(message = "intervals is empty", groups = InputValidations.class)
@@ -59,14 +56,6 @@ public class SAMToolsDepthToGATKDOCFormatConverter extends Module {
 
     public void setInput(File input) {
         this.input = input;
-    }
-
-    public Integer getThreads() {
-        return threads;
-    }
-
-    public void setThreads(Integer threads) {
-        this.threads = threads;
     }
 
     public File getIntervals() {
