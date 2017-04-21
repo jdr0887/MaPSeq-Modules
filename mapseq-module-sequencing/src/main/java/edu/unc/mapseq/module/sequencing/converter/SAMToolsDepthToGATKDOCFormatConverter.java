@@ -14,7 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "SAMToolsDepthToGATKDOCFormatConverter", executable = "$JAVA8_HOME/bin/java -Xmx40g -jar $%s_SEQUENCING_TOOLS/interval-format-converter.jar")
+@Application(name = "SAMToolsDepthToGATKDOCFormatConverter", executable = "$JAVA8_HOME/bin/java -Xmx52g -Xms52g -jar $%s_SEQUENCING_TOOLS/interval-format-converter.jar")
 public class SAMToolsDepthToGATKDOCFormatConverter extends Module {
 
     @NotNull(message = "input is required", groups = InputValidations.class)
