@@ -35,19 +35,15 @@ public class BCL2Fastq extends Module {
     @InputArgument(flag = "--sample-sheet", delimiter = " ")
     private File sampleSheet;
 
-    @FileIsReadable(message = "intensities dir is not readable", groups = InputValidations.class)
     @InputArgument(flag = "--intensities-dir", delimiter = " ")
     private File intensitiesDir;
 
-    @FileIsReadable(message = "interop dir is not readable", groups = InputValidations.class)
     @InputArgument(flag = "--interop-dir", delimiter = " ")
     private File interopDir;
 
-    @FileIsReadable(message = "stats dir is not readable", groups = InputValidations.class)
     @InputArgument(flag = "--stats-dir", delimiter = " ")
     private File statsDir;
 
-    @FileIsReadable(message = "reports dir is not readable", groups = InputValidations.class)
     @InputArgument(flag = "--reports-dir", delimiter = " ")
     private File reportsDir;
 
