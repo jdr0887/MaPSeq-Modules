@@ -14,7 +14,7 @@ import edu.unc.mapseq.module.annotations.OutputValidations;
 import edu.unc.mapseq.module.constraints.FileIsNotEmpty;
 import edu.unc.mapseq.module.constraints.FileIsReadable;
 
-@Application(name = "PicardMarkDuplicates", executable = "$JAVA7_HOME/bin/java -Xmx4g -jar $%s_PICARD_HOME/picard.jar MarkDuplicates TMP_DIR=$MAPSEQ_CLIENT_HOME/tmp VALIDATION_STRINGENCY=SILENT REMOVE_DUPLICATES=true")
+@Application(name = "PicardMarkDuplicates", executable = "$JAVA7_HOME/bin/java -Xmx4g -jar $%s_PICARD_HOME/picard.jar MarkDuplicates TMP_DIR=$MAPSEQ_CLIENT_HOME/tmp")
 public class PicardMarkDuplicates extends Module {
 
     @NotNull(message = "Input is required", groups = InputValidations.class)
@@ -36,6 +36,12 @@ public class PicardMarkDuplicates extends Module {
     @InputArgument(flag = "MAX_RECORDS_IN_RAM", delimiter = "=")
     private Integer maxRecordsInRAM = 1000000;
 
+    @InputArgument(flag = "VALIDATION_STRINGENCY", delimiter = "=")
+    private String validationStringency = "SILENT";
+
+    @InputArgument(flag = "REMOVE_DUPLICATES", delimiter = "=")
+    private String removeDuplicates = Boolean.FALSE.toString().toLowerCase();
+
     public PicardMarkDuplicates() {
         super();
     }
@@ -47,7 +53,8 @@ public class PicardMarkDuplicates extends Module {
 
     @Override
     public String getExecutable() {
-        return String.format(getModuleClass().getAnnotation(Application.class).executable(), getWorkflowName().toUpperCase());
+        return String.format(getModuleClass().getAnnotation(Application.class).executable(),
+                getWorkflowName().toUpperCase());
     }
 
     public Integer getMaxRecordsInRAM() {
@@ -56,6 +63,22 @@ public class PicardMarkDuplicates extends Module {
 
     public void setMaxRecordsInRAM(Integer maxRecordsInRAM) {
         this.maxRecordsInRAM = maxRecordsInRAM;
+    }
+
+    public String getValidationStringency() {
+        return validationStringency;
+    }
+
+    public void setValidationStringency(String validationStringency) {
+        this.validationStringency = validationStringency;
+    }
+
+    public String getRemoveDuplicates() {
+        return removeDuplicates;
+    }
+
+    public void setRemoveDuplicates(String removeDuplicates) {
+        this.removeDuplicates = removeDuplicates;
     }
 
     public File getInput() {
@@ -84,8 +107,9 @@ public class PicardMarkDuplicates extends Module {
 
     @Override
     public String toString() {
-        return String.format("PicardMarkDuplicates [input=%s, output=%s, metricsFile=%s, maxRecordsInRAM=%s, toString()=%s]", input, output,
-                metricsFile, maxRecordsInRAM, super.toString());
+        return String.format(
+                "PicardMarkDuplicates [input=%s, output=%s, metricsFile=%s, maxRecordsInRAM=%s, toString()=%s]", input,
+                output, metricsFile, maxRecordsInRAM, super.toString());
     }
 
 }
