@@ -58,7 +58,7 @@ public class SAMToolsView extends Module {
     private Integer outputAlignmentsWithBitsPresentInFlag;
 
     @InputArgument
-    private Integer skipAlignmentsWithBitsPresentInFlag;
+    private String skipAlignmentsWithBitsPresentInFlag;
 
     @InputArgument
     private String onlyOutputReadsInLibrary;
@@ -121,7 +121,7 @@ public class SAMToolsView extends Module {
         }
 
         if (skipAlignmentsWithBitsPresentInFlag != null) {
-            command.append(" -F ").append(skipAlignmentsWithBitsPresentInFlag.toString());
+            command.append(" -F ").append(skipAlignmentsWithBitsPresentInFlag);
         }
 
         if (StringUtils.isNotEmpty(onlyOutputReadsInLibrary)) {
@@ -239,11 +239,11 @@ public class SAMToolsView extends Module {
         this.outputAlignmentsWithBitsPresentInFlag = outputAlignmentsWithBitsPresentInFlag;
     }
 
-    public Integer getSkipAlignmentsWithBitsPresentInFlag() {
+    public String getSkipAlignmentsWithBitsPresentInFlag() {
         return skipAlignmentsWithBitsPresentInFlag;
     }
 
-    public void setSkipAlignmentsWithBitsPresentInFlag(Integer skipAlignmentsWithBitsPresentInFlag) {
+    public void setSkipAlignmentsWithBitsPresentInFlag(String skipAlignmentsWithBitsPresentInFlag) {
         this.skipAlignmentsWithBitsPresentInFlag = skipAlignmentsWithBitsPresentInFlag;
     }
 
